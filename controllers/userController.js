@@ -1,4 +1,7 @@
+const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const Policy = require('../models/policyModel');
+const Claim = require('../models/claimModel');
 const bcrypt = require('bcrypt');
 
 const userController = {
@@ -49,8 +52,11 @@ const userController = {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      // Return user data
-      res.status(200).json({ user });
+      // Generate JWT token
+      const token = jwt.sign({ user: user._id }, 'secret_key', { expiresIn: '1h' });
+
+      // Return token to client
+      res.status(200).json({ token, user });
     } catch (error) {
       console.error("Error logging in user:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -112,6 +118,43 @@ const userController = {
       res.status(200).json({ message: "User deleted successfully" });
     } catch (error) {
       console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+  getUserPolicies: async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      // Find user by ID
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Fetch policies associated with the user
+      const policies = await Policy.find({ customerId: userId });
+      res.status(200).json({ policies });
+    } catch (error) {
+      console.error("Error fetching user policies:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  getUserClaims: async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      // Find user by ID
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Fetch claims associated with the user
+      const claims = await Claim.find({ customerId: userId });
+      res.status(200).json({ claims });
+    } catch (error) {
+      console.error("Error fetching user claims:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }

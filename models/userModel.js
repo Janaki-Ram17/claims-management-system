@@ -8,10 +8,12 @@ const userSchema = new mongoose.Schema({
   mobileNumber: { type: String, required: true },
   age: { type: Number, required: true },
   dateOfBirth: { type: Date, required: true },
-  userType: { type: String, enum: ['admin', 'customer'], default: 'customer' }
+  userType: { type: String, enum: ['admin', 'customer'], default: 'customer' },
+  policies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Policy' }],
+  claims: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Claim' }]
 });
 
-// password hashing before saving
+// Password hashing before saving
 userSchema.pre('save', async function (next) {
   try {
     if (!this.isModified('password')) {
@@ -26,4 +28,3 @@ userSchema.pre('save', async function (next) {
 });
 
 module.exports = mongoose.model('User', userSchema);
-

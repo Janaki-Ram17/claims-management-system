@@ -11,10 +11,21 @@ const claimController = {
     }
   },
 
+  getClaimsByUser: async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const claims = await Claim.find({ customerId: userId });
+      res.status(200).json({ claims });
+    } catch (error) {
+      console.error("Error fetching user's claims:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
   addClaim: async (req, res) => {
     try {
-      const { policyId, customerId, claimAmount, reason } = req.body;
-      const newClaim = new Claim({ policyId, customerId, claimAmount, reason });
+      const { policyId, claimAmount, reason } = req.body;
+      const newClaim = new Claim({ policyId, claimAmount, reason });
       await newClaim.save();
       res.status(201).json({ message: "Claim request added successfully" });
     } catch (error) {

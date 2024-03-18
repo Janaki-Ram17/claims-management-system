@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const PolicyController = require('../controllers/policyController');
+const authMiddleware = require('../middleware/authMiddleware'); // Import the authentication middleware
 
 // Define routes for policies
-router.get('/', PolicyController.getAllPolicies);
+router.get('/:userId', PolicyController.getPoliciesByUser); // Route to get policies associated with a specific user
 
-router.post('/add', PolicyController.addPolicy);
+router.post('/:userId', authMiddleware.requireAuth, PolicyController.addPolicy);
 router.put('/:id/approve', PolicyController.approvePolicy);
 router.put('/:id/reject', PolicyController.rejectPolicy);
 
