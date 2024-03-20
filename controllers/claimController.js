@@ -1,4 +1,7 @@
 const Claim = require('../models/claimModel');
+const Policy = require('../models/policyModel');
+const User = require('../models/userModel');
+const mongoose = require('mongoose');
 
 const claimController = {
   getAllClaims: async (req, res) => {

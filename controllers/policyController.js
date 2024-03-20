@@ -13,6 +13,16 @@ const policyController = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
+  getAllPolicyRequests: async (req, res) => {
+    try {
+      const policyRequests = await Policy.find({ status: 'pending' }); 
+      res.status(200).json(policyRequests);
+    } catch (error) {
+      console.error('Error fetching policy requests:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  },
+
 
   getPoliciesByUser: async (req, res) => {
     try {
@@ -35,9 +45,7 @@ const policyController = {
 
   addPolicy: async (req, res) => {
     try {
-      const customerId = req.user; // Assuming user ID is stored in req.user
-
-      // Retrieve other details from the request body
+      const customerId = req.user; 
       const { amount,
         duration,
         comment } = req.body;
@@ -87,6 +95,42 @@ const policyController = {
       res.status(200).json({ message: "Policy rejected successfully" });
     } catch (error) {
       console.error("Error rejecting policy:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+  addPolicyRequest: async (req, res) => {
+    try {
+      const customerId = req.user._id; // Assuming user ID is stored in req.user
+
+      // Retrieve other details from the request body
+      const { amount, duration, comment } = req.body;
+
+      // Check if required fields are provided
+      if (!duration || !amount) {
+        return res.status(400).json({ message: "Duration and amount are required" });
+      }
+
+      const today = new Date();
+      let numYears = parseInt(duration)
+      let validityEndDate = new Date(today);
+      validityEndDate.setFullYear(today.getFullYear() + numYears)
+
+      // Create the policy request
+      const newPolicyRequest = new Policy({
+        customerId,
+        validity: validityEndDate,
+        PolicyAmount: amount,
+        PolicyBalance: amount,
+        comment,
+        status: "pending"
+      });
+
+      // Save the policy request to the database
+      await newPolicyRequest.save();
+
+      res.status(201).json({ message: "Policy request added successfully", newPolicyRequest });
+    } catch (error) {
+      console.error("Error adding policy request:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }

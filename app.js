@@ -5,8 +5,29 @@ const userRoutes = require('./routes/userRoutes');
 const policyRoutes = require('./routes/policyRoutes');
 const claimRoutes = require('./routes/claimRoutes');
 const cors = require('cors');
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express')
 
 const app = express();
+
+const options ={
+  definition: {
+    openapi : '3.0.0',
+    info : {
+      title: 'Node JS API Claims Management',
+      version: '1.0.0'
+    },
+    servers:[
+      {
+        url: 'http://localhost:5000/'
+      }
+    ]
+  },
+  apis: ['./routes/userRoutes.js']
+}
+
+const swaggerSpec = swaggerJSDoc(options)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 const MONGO_URL = process.env.MONGO_URL
 const PORT = process.env.PORT || 5000
