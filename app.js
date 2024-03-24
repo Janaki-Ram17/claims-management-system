@@ -8,6 +8,7 @@ const cors = require('cors');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express')
 
+
 const app = express();
 
 const options ={
@@ -40,16 +41,13 @@ app.use('/api/claims', claimRoutes);
 
 
 mongoose.set("strictQuery", false)
-mongoose.
-connect(MONGO_URL)
-.then(()=>{
-  console.log('connected to MongoDB')
-  app.listen(PORT,()=>{
-    console.log(`API is running on port ${PORT}`)
+mongoose.connect(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log(`Connected to MongoDB at ${MONGO_URL}`);
+    app.listen(PORT, () => {
+      console.log(`API is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
   });
-}).catch((error)=>{
-  console.log(error)
-})
-
-
-

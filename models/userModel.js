@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   userType: { type: String, enum: ['admin', 'customer'], default: 'customer' },
   policies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Policy' }],
   claims: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Claim' }]
-});
+}, { timestamps: true });
 
 // Password hashing before saving
 userSchema.pre('save', async function (next) {
