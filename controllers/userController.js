@@ -32,6 +32,7 @@ const userController = {
         res.status(201).json({ message: "User created successfully", newUser });
       } catch (error) {
         console.error('Error creating user:', error);
+        res.status(500).json({ message: "Internal server error" });
       }
     } catch (error) {
       console.error("Error registering user:", error);
